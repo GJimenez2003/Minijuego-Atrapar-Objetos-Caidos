@@ -1,14 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System.IO;
+using TMPro;
 
+[System.Serializable]
+public class HighScoreData
+{
+    public int highScore;
+}
 public class PuntuacionAlta : MonoBehaviour
 {
     public static PuntuacionAlta instancia;
-    public int puntuacionMaxima;
+    public int highScore = 0;
+    public TextMeshProUGUI highScoreText;
 
-    private void Awake()
+
+    private string rutaArchivo;
+
+    void Awake()
     {
+        // Singleton
         if (instancia == null)
         {
             instancia = this;
@@ -18,13 +31,42 @@ public class PuntuacionAlta : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        rutaArchivo = Application.persistentDataPath + "/highscore.json";
+        CargarPuntuacion();
     }
 
-    public void GuardarPuntuacion(int puntuacion)
+    public void ActualizarPuntuacionAlta(int nuevaPuntuacion)
     {
-        if (puntuacion > puntuacionMaxima)
+        if (nuevaPuntuacion > highScore)
         {
-            puntuacionMaxima = puntuacion;
+            highScore = nuevaPuntuacion;
+            GuardarPuntuacion();
+            ActualizarTextoPuntuacionAlta();
         }
+    }
+
+    void CargarPuntuacion()
+    {
+        if (File.Exists(rutaArchivo))
+        {
+            string json = File.ReadAllText(rutaArchivo);
+            HighScoreData datos = JsonUtility.FromJson<HighScoreData>(json);
+            highScore = datos.highScore;
+            ActualizarTextoPuntuacionAlta();
+        }
+    }
+
+    void GuardarPuntuacion()
+    {
+        HighScoreData datos = new HighScoreData();
+        datos.highScore = highScore;
+        string json = JsonUtility.ToJson(datos);
+        File.WriteAllText(rutaArchivo, json);
+    }
+
+    void ActualizarTextoPuntuacionAlta()
+    {
+        highScoreText.text = "Puntuación más alta: " + highScore;
     }
 }

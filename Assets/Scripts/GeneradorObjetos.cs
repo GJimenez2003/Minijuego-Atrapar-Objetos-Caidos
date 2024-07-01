@@ -1,21 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GeneradorObjetos : MonoBehaviour
 {
-    public GameObject objetoCaidoPrefab;
-    public float intervaloGeneracion = 2f;
+    public GameObject[] objetosPrefab; // Array de prefabs de objetos que caen
+    public float intervalo = 1f; // Intervalo de tiempo entre la generación de objetos
 
-    private void Start()
+    void Start()
     {
-        InvokeRepeating("GenerarObjeto", 1f, intervaloGeneracion);
+        InvokeRepeating("GenerarObjeto", 0f, intervalo); // Llamar a GenerarObjeto cada 'intervalo' segundos
     }
 
     void GenerarObjeto()
     {
-        float xPosition = Random.Range(-5f, 5f);
-        Vector3 spawnPosition = new Vector3(xPosition, 10f, 0f);
-        Instantiate(objetoCaidoPrefab, spawnPosition, Quaternion.identity);
+        int indiceAleatorio = Random.Range(0, objetosPrefab.Length);
+        Instantiate(objetosPrefab[indiceAleatorio], new Vector3(Random.Range(-8f, 8f), 6f, 0f), Quaternion.identity); 
+        // Instanciar un objeto aleatorio en una posición x aleatoria y en la parte superior de la pantalla
     }
+
+
 }
